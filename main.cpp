@@ -30,12 +30,6 @@ Ty input(Ty floor = 0, Ty ceil = hardLimit){
     }
 }
 
-enum Choice {
-    eMiddle = 1,
-    eRight,
-    eLeft
-} choice;
-
 float grabZarea(float zVvalue); // Moved below for goodness sake.
 
 float findZvalue(float x, float mean, float stddev){
@@ -47,29 +41,58 @@ int main() {
     cout << "Normal Distribution Calculator \n(C) 2020 Christopher Digno \n";
 
     while(opndone){
-        cout << "Choose your desired operation! \n1. a < X < b \n2. X > a | X < a \n> ";
-        int opChoice = input<int>(1,2);
-        float dataint[4], ans;
+        cout << "Choose your desired operation! \n1. a < X < b \n2. X > a \n3. X < a \n> ";
+        int opChoice = input<int>(1,3);
+        float dataint[4], ans, resbuf1, resbuf2;
 
-        if(opChoice == eMiddle){
+        if(opChoice == 1){
             cout << "Enter a <space> b <space> mean <space> stddev | a < b \n> ";
             for(int i = 0; i < 4; i++){
                 dataint[i] = input<float>();
             }
-
-            if(dataint[0] >= dataint[1]){
+            //     a             b             mean           stddev
+            if(dataint[0] >= dataint[1]){ // dataint[2]     dataint[3]
                 cout << "a can't be higher or as same as b!\n";
             }
             else {
-                ans = grabZarea(findZvalue(dataint[0],dataint[2],dataint[3])) + grabZarea(findZvalue(dataint[1],dataint[2],dataint[3]));
+                resbuf1 = grabZarea(findZvalue(dataint[0],dataint[2],dataint[3]));
+                resbuf2 = grabZarea(findZvalue(dataint[1],dataint[2],dataint[3]));
+                if((dataint[0] < dataint[2]) && (dataint[1] < dataint[2])){
+                    ans = resbuf1 - resbuf2;
+                }
+                else if((dataint[0] > dataint[2]) && (dataint[1] > dataint[2])){
+                    ans = resbuf2 - resbuf1;
+                }
+                else {
+                    ans = resbuf1 + resbuf2;
+                }
             }
         }
-        else {
+        else if(opChoice == 2){ // X > a
             cout << "Enter a <space> mean <space> stddev\n> ";
             for(int i = 0; i < 3; i++){
                 dataint[i] = input<float>();
             }
-            ans = grabZarea(findZvalue(dataint[0],dataint[1],dataint[2])) + (0.5f);
+            resbuf1 = grabZarea(findZvalue(dataint[0],dataint[1],dataint[2]));
+            if(dataint[0] < dataint[1]){
+                ans = resbuf1 + 0.5f;
+            }
+            else {
+                ans = 0.5f - resbuf1;
+            }
+        }
+        else { // X < a
+            cout << "Enter a <space> mean <space> stddev\n> ";
+            for(int i = 0; i < 3; i++){
+                dataint[i] = input<float>();
+            }
+            resbuf1 = grabZarea(findZvalue(dataint[0],dataint[1],dataint[2]));
+            if(dataint[0] < dataint[1]){
+                ans = 0.5f - resbuf1;
+            }
+            else {
+                ans = resbuf1 + 0.5f;
+            }
         }
         cout << "Calculation returned: " << ans << endl;
         cout << "Do you want to do the operation again? (0/1) \n> ";
